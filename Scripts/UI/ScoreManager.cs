@@ -1,37 +1,43 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
-public class ScoreManager : MonoBehaviour
-{
-    public static ScoreManager instance;
+namespace UI {
+    public class ScoreManager : MonoBehaviour {
+        // A better way would be a UI Event Channel
+        public static ScoreManager Instance;
 
-    public TMP_Text scoreText;
-    public TMP_Text highscoreText;
+        [SerializeField] private TMP_Text scoreText;
+        [SerializeField] private TMP_Text highscoreText;
 
-    int score = 0;
-    int highscore = 0;
+        // Score that counts the enemies killed
+        private int _score;
+        private int _highscore;
 
-    private void Awake()
-    {
-        instance = this;
-    }
+        private void Awake() {
+            if (Instance == null) {
+                Instance = this;
+            } else {
+                Destroy(gameObject);
+            }
+        }
 
-    void Start()
-    {
-        highscore = PlayerPrefs.GetInt("highscore", 0);
-        scoreText.text = score.ToString() + " POINTS";
-        highscoreText.text = "HIGHSCORE: " + highscore.ToString();
-    }
+        private void Start() {
+            // Load the highscore from the PlayerPrefs
+            _highscore = PlayerPrefs.GetInt("highscore", 0);
+        
+            scoreText.text = _score + " POINTS";
+            highscoreText.text = "HIGHSCORE: " + _highscore;
+        }
     
-    public void AddPoint ()
-    {
-        score += 1;
-        scoreText.text = score.ToString() + " POINTS";
-        if (highscore < score)
-        {
-            PlayerPrefs.SetInt("highscore", score);
+        public void AddPoint () {
+            _score ++;
+            
+            // Display the score
+            scoreText.text = _score + " POINTS";
+            // If highscore, update the highscore
+            if (_highscore < _score) {
+                PlayerPrefs.SetInt("highscore", _score);
+            }
         }
     }
 }

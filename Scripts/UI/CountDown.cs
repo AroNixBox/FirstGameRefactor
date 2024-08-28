@@ -1,54 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System;
 using TMPro;
+using UnityEngine;
 
-public class CountDown : MonoBehaviour
-{
-    //for GameOverScreen
-    //public GameObject objectToActivateAndDeactivate;
-    //for timer
-    float currentTime = 0f;
-    float startingTime = 250f;
+namespace UI {
+    public class CountDown : MonoBehaviour {
+        [SerializeField] TMP_Text countdownText;
+        [SerializeField] private float countdownSeconds = 250f;
+        [SerializeField] private GameOver gameOver;
+        
+        private DateTime _endTime;
+        private const float ColorYellowThreshold = 80f;
+        private const float ColorRedThreshold = 30f;
 
-    [SerializeField] TMP_Text countdownText;
-
-    public GameObject youLost;
-
-    public float CurrentTime
-    {
-        get => currentTime; set => currentTime = value;
-    }
-    void Start()
-    {
-        currentTime = startingTime;
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        currentTime -= 1 * Time.deltaTime;
-        countdownText.text = currentTime.ToString("0.0");
-
-        if (currentTime <= 80)
-        {
-            countdownText.color = Color.yellow;
+        
+        private void Start() {
+            _endTime = DateTime.Now.AddSeconds(countdownSeconds);
         }
+        
+        private void Update() {
+            var remainingTime = _endTime - DateTime.Now;
+            countdownText.text = remainingTime.ToString(@"mm\:ss\.ff");
 
-        if (currentTime <= 30)
-        {
-            countdownText.color = Color.red;
-        }
-        else
-        {
-            countdownText.color = Color.white;
-        }
+            countdownText.color = remainingTime.TotalSeconds switch {
+                <= ColorRedThreshold => Color.red,
+                <= ColorYellowThreshold => Color.yellow,
+                _ => Color.white
+            };
 
-        if (currentTime <= 0)
-        {
-            youLost.SetActive(true);
-            Time.timeScale = 0;
+            if (remainingTime.TotalSeconds <= 0) {
+                gameOver.EnableGameLostScreen();
+                Time.timeScale = 0;
+            }
         }
     }
 }

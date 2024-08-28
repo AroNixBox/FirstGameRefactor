@@ -1,30 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class MainMenu : MonoBehaviour
-{
-    public void PlayGame()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-    }
-    public void QuitGame ()
-    {
-        Debug.Log("Quit");
+namespace UI {
+    public class MainMenu : MonoBehaviour {
+        // SceneReferences are draggable in the inspector by using:
+        // https://assetstore.unity.com/packages/tools/utilities/scene-field-attach-scenes-to-inspector-free-223368?srsltid=AfmBOoq-fIlsJO1iPRIxoQ_8gs5bbmzhX3n7WBkTbtor4pYTpLiJRy-V
+        [SerializeField] private Udar.SceneManager.SceneField menuScene;
+        [SerializeField] private Udar.SceneManager.SceneField gameScene;
+        [SerializeField] private Udar.SceneManager.SceneField tutorialScene;
+    
+        public void PlayGame() {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(gameScene.Name);
+        }
+        public void QuitGame () {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#elif UNITY_STANDALONE  
         Application.Quit();
-    }
-    public void GameMainMenu ()
-    {
-        SceneManager.LoadScene("Menu");
-    }
-
-    public void RetryGame ()
-    {
-        SceneManager.LoadScene("GameScene");
-    }
-    public void PlayTutorial()
-    {
-        SceneManager.LoadScene("Tutorial");
+#endif
+        }
+        public void GameMainMenu () {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(menuScene.Name);
+        }
+        public void PlayTutorial() {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(tutorialScene.Name);
+        }
     }
 }
